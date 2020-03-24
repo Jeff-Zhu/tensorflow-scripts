@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["/home/jeff/models/mobilenet_v1_0.25_224"],
+            "console": "integratedTerminal"
+        }
+    ]
+}
