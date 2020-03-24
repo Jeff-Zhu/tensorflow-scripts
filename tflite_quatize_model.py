@@ -6,7 +6,19 @@
 
 Example usage:
 
-python tflig_quantize.py foo.tflite foo_quantized.tflit
+python tflite_quantize.py foo.tflite foo_quantized.tflite
+
+
+Loading saved model with
+   converter = tf.lite.TFLiteConverter.from_saved_model(saved_model_dir)
+problem:
+
+(tf2.1-gpu) jeff@U18-1080x2:~$ tflite_convert --saved_model_dir /home/jeff/models/mobilenet_v1_0.5_224 --output_file /home/jeff/models/mobilenet_v1_0.5_224/my_convert.tflite
+
+  File "/home/jeff/miniconda3/envs/tf2.1-gpu/lib/python3.7/site-packages/tensorflow/lite/python/lite.py", line 343, in convert
+    raise ValueError("This converter can only convert a single "
+ValueError: This converter can only convert a single ConcreteFunction. Converting multiple functions is under development.
+
 """
 
 import sys
