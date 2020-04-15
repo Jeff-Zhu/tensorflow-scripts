@@ -15,7 +15,7 @@ def main(saved_model_dir):
   IMAGE_SHAPE = (224, 224)
   num_classes = 1000
   model = tf.keras.Sequential([
-      hub.KerasLayer("https://tfhub.dev/google/imagenet/mobilenet_v1_025_224/feature_vector/1", input_shape=IMAGE_SHAPE+(3,), trainable=False),  # Can be True, see below.
+      hub.KerasLayer("https://tfhub.dev/google/imagenet/mobilenet_v1_025_224/feature_vector/4", input_shape=IMAGE_SHAPE+(3,), trainable=False),  # Can be True, see below.
       tf.keras.layers.Dense(num_classes, activation='softmax')
   ])
   model.build([None, 224, 224, 3])  # Batch input shape.

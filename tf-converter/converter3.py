@@ -20,14 +20,14 @@ def main(saved_model_dir):
   tflite_model = converter.convert()
   
   #if you want to save the TF Lite model use below steps or else skip
-  tflite_model_file = pathlib.Path('/tmp/pretrainedmodel.tflite')
+  tflite_model_file = pathlib.Path(saved_model_dir + '/pretrainedmodel.tflite')
   tflite_model_file.write_bytes(tflite_model)
 
   # converter.optimizations = [tf.lite.Optimize.OPTIMIZE_DEFAULT,  .OPTIMIZE_FOR_SIZE]
   converter.optimizations = [tf.lite.Optimize.DEFAULT]
   converter.inference_type = tf.compat.v1.lite.constants.QUANTIZED_UINT8
   tflite_quant_model = converter.convert()
-  tflite_quant_model_file = pathlib.Path('/tmp/pretrainedmodel_quantized.tflite')
+  tflite_quant_model_file = pathlib.Path(saved_model_dir + '/pretrainedmodel_quantized.tflite')
   tflite_quant_model_file.write_bytes(tflite_quant_model)
 
   print("TFLite quantized MobileNet 224, 224, 3), alpha=0.25 Summary:")

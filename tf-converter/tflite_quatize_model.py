@@ -30,7 +30,23 @@ import tensorflow as tf
 
 
 def quantize_mode( saved_model_dir, quantized_tflite_output, optimizations):
-  converter = tf.lite.TFLiteConverter.from_saved_model(saved_model_dir)
+  
+  # keras_model_ = tf.keras.models.load_model(saved_model_dir)
+  # inputs = tf.keras.Input(shape=(224,224,3))
+  # outputs = keras_model_(inputs)
+  # keras_model = tf.keras.Model(inputs=inputs, outputs=outputs)
+  
+  keras_model = tf.keras.models.load_model(saved_model_dir)
+  inputs = tf.keras.Input(shape=(224,224,3))
+  keras_model.Dense(inputs)
+  # saved_model_path = "/tmp/saved_models/"
+  # tf.keras.models.save_model(keras_model, saved_model_path)
+  # converter = tf.lite.TFLiteConverter.from_saved_model(saved_model_path)
+
+  converter = tf.lite.TFLiteConverter.from_keras_model(keras_model)
+
+  # converter = tf.lite.TFLiteConverter.from_saved_model(saved_model_dir)
+
   converter.optimizations = optimizations
   tflite_quant_model = converter.convert()
   # Save the quantized model to disk
