@@ -13,7 +13,7 @@ import xavier_mobilenet_yolo2_backbone as xmyolo2
 
 def main(saved_model_dir, model_name_prefix):
 
-    input_shape = (256, 256, 3)
+    input_shape = (64, 64, 1)
     alpha = 0.25
     model = xmyolo2.MobileNetYolo2Backbone(input_shape=input_shape, alpha=alpha)
 
@@ -32,7 +32,8 @@ def main(saved_model_dir, model_name_prefix):
     tflite_model_file.write_bytes(tflite_model)
 
     # converter.optimizations = [tf.lite.Optimize.OPTIMIZE_DEFAULT,  .OPTIMIZE_FOR_SIZE]
-    converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    # converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    converter.optimizations = [tf.lite.Optimize.OPTIMIZE_FOR_SIZE]
     converter.inference_type = tf.compat.v1.lite.constants.QUANTIZED_UINT8
     tflite_quant_model = converter.convert()
     tflite_quant_model_file = pathlib.Path(
