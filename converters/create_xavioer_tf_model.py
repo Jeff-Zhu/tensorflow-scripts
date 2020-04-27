@@ -23,12 +23,6 @@ def main(saved_model_dir, model_name_prefix):
     print("MobileNetYolo2Backbone ", input_shape, "alpha = ", alpha, " Summary:")
     print(model.summary())
 
-    keras_model_file: Union[Path, Any] = pathlib.Path(
-        saved_model_dir + "/" + model_name_prefix + ".h5"
-    )
-    print("Saving keras model to ", keras_model_file)
-    model.save(keras_model_file)
-
     # here we pretrained model no need use SaveModel
     # here we will pass model directly to TFLiteConverter
     ## TF 2.0
@@ -43,31 +37,25 @@ def main(saved_model_dir, model_name_prefix):
     )
     tflite_model_file.write_bytes(tflite_model)
 
-
     # Create V1 converter for full integer optimization
-    filepath = '/tmp/saved_model'
     # TF 2.1
-    tf.keras.models.save_model(model, filepath, save_format='tf')
+    tf.keras.models.save_model(model, saved_model_dir, save_format="tf")
 
-    ### checkpoint_path = "/tmp/checkpoint/cp-{epoch:04d}.ckpt"
-    ### checkpoint_dir = os.path.dirname(checkpoint_path)
-    ### 
-    ### # Save the weights using the `checkpoint_path` format
-    ### model.save_weights(checkpoint_path.format(epoch=0))
-    
+    # Create V1 converter from *.pb in saved model dir
+    q8_converter = tf.compat.v1.lite.TFLiteConverter.from_saved_model(saved_model_dir)
+    # q8_converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    q8_converter.inference_type = tf.compat.v1.lite.constants.QUANTIZED_UINT8
+    q8_converter.default_ranges_stats = (0, 255)
+    input_arrays = q8_converter.get_input_arrays()
+    q8_converter.quantized_input_stats = {
+        input_arrays[0]: (0.0, 1.0)
+    }  # mean_value, std_dev
+    tflite_model = q8_converter.convert()
 
-    ## # converter.optimizations = [tf.lite.Optimize.OPTIMIZE_DEFAULT,  .OPTIMIZE_FOR_SIZE]
-    ## # converter.optimizations = [tf.lite.Optimize.DEFAULT]
-    ## converter.optimizations = [tf.lite.Optimize.OPTIMIZE_FOR_SIZE]
-    ## converter.inference_type = tf.compat.v1.lite.constants.QUANTIZED_UINT8
-    ## tflite_quant_model = converter.convert()
-    ## tflite_quant_model_file = pathlib.Path(
-    ##     saved_model_dir + "/" + model_name_prefix + "_quantized.tflite"
-    ## )
-    ## tflite_quant_model_file.write_bytes(tflite_quant_model)
-    ## 
-    ## # print("TFLite quantized MobileNet 224, 224, 3), alpha=0.25 Summary:")
-    ## # print(tflite_model.summary())
+    tflite_model_file = pathlib.Path(
+        saved_model_dir + "/" + model_name_prefix + "_q8.tflite"
+    )
+    tflite_model_file.write_bytes(tflite_model)
 
 
 if __name__ == "__main__":
